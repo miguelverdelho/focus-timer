@@ -1,4 +1,16 @@
-<article class="timer">
-    
-    
+<article class="timer" [class.running]="isRunning">    
+    <div class="title">
+        <h3>{{ title() }}</h3>
+        <div class="controls">
+            @if(isRunning){
+                <button (click)="stop()" appButton>❚❚</button>
+            }
+            @else {
+                <button (click)="start()" appButton>►</button>
+            }
+        </div>
+    </div>
+    <div class="time">
+        <p>{{ formatTime(elapsedTime) }}</p>
+    </div>
 </article>

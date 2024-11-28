@@ -1,0 +1,23 @@
+[
+    {
+        "date": "2023-03-01T00:00:00.000Z",
+        "elapsedTimes": [
+            {
+                "title": "Working",
+                "elapsedTime": 28800000
+            },
+            {
+                "title": "Coding",
+                "elapsedTime": 7200000
+            },
+            {
+                "title": "Gaming",
+                "elapsedTime": 10800000
+            },
+            {
+                "title": "Studying",
+                "elapsedTime": 18000000
+            }
+        ]
+    }
+]

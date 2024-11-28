@@ -1,0 +1,35 @@
+
+header {
+    padding: 2rem;
+    border-radius: 4px;
+    background: linear-gradient(#505a5d, #717678);
+    font-size: 1.25rem;
+    box-shadow: 0 0 8px rgba(25, 25, 24, 0.7);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    vertical-align: middle;
+}
+  
+
+header img {
+    width: 4rem;
+    height: 4rem;
+    vertical-align: middle;
+}
+
+header h2 {
+    text-align: left;
+    vertical-align: middle;
+    font-size: 1rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+header p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+  

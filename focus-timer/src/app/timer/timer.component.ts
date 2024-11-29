@@ -1,4 +1,4 @@
-import { Component, computed, CreateEffectOptions, effect, inject, input } from '@angular/core';
+import { Component, computed, CreateEffectOptions, effect, inject, input, OnInit } from '@angular/core';
 import { ButtonComponent } from '../shared/button/button.component';
 import { TimerService } from './timer.service';
 
@@ -10,21 +10,29 @@ import { TimerService } from './timer.service';
   styleUrl: './timer.component.scss'
 })
 export class TimerComponent {
-  title = input.required<string>();  
+  title = input.required<string>();
+  private id = computed(() => this.title().toLowerCase());
   private intervalId: any;
   public elapsedTime: number = 0;
   public isRunning: boolean = false;
-
   private timerService = inject(TimerService);
 
-  otherTimerRunning = effect(() =>{
-    const startedTimer = this.timerService.getTimerStarted();
-      if(startedTimer() !== this.title()){
-        this.stop();
-      }
-    }, {
-      allowSignalWrites: true
-    });
+  constructor() {
+    
+    // load inital daily timer
+    effect(() => {
+      this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime || 0;
+    });   
+    // stop this timer if another one was started 
+    effect(() =>{
+     const startedTimer = this.timerService.onTimerStarted();
+       if(startedTimer() !== this.title()){
+         this.stop();
+       }
+     }, {
+       allowSignalWrites: true
+     });
+  }
 
   public start() {
     this.timerService.onStartTimer(this.title());    
@@ -37,7 +45,7 @@ export class TimerComponent {
   }
 
   public stop() {
-    this.timerService.onStopTimer(this.title());
+    this.timerService.onStopTimer(this.id(), this.elapsedTime);
     if (this.isRunning) {
       clearInterval(this.intervalId);
       console.log('[Stopped Timer]: ' + this.title());

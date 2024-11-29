@@ -1,8 +1,8 @@
-export interface TimerModel {
-    date: Date,
+export interface Time {
+date: Date,
     elapsedTimes :[
         {
-            title:string,
+            id:string,
             elapsedTime: number,
         }
     ]

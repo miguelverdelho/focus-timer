@@ -1,9 +1,8 @@
 import { DestroyRef, inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { catchError, map, Observable, tap, throwError } from "rxjs";
 
 import { type Time } from "./timer.model";
-import { Firestore, collectionData, collection } from '@angular/fire/firestore';
+import { environment } from "../environments/environment";
 
 
 @Injectable({
@@ -11,11 +10,9 @@ import { Firestore, collectionData, collection } from '@angular/fire/firestore';
 })
 export class TimerService {
     private timerStarted = signal<string>('');
-    private apiUrl = 'times.json';
+    private apiUrl = environment.apiUrl;
     private httpClient = inject(HttpClient);
     private destroyRef = inject(DestroyRef);
-
-
 
     todayTimers = signal<Time|undefined>(undefined);
 
@@ -24,7 +21,7 @@ export class TimerService {
     }
 
     fetchTimerData() { 
-        return this.httpClient.get<Time[]>(this.apiUrl);
+        return this.httpClient.get<Time[]>(this.apiUrl + 'times').pipe();
     }
 
     onStartTimer(id: string) {

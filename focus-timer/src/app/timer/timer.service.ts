@@ -42,7 +42,7 @@ export class TimerService {
         const subscription = this.fetchTimerData()
         .subscribe({
           next: (data) => {
-            this.todayTimers.set(data.find(timer => new Date(timer.date).toDateString() === new Date().toDateString()));
+            this.todayTimers.set(data.find(timer => new Date(timer.date).toLocaleDateString() === new Date().toLocaleDateString()));
           },
           complete: () => {
             

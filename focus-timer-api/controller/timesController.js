@@ -1,52 +1,6 @@
+const options = { day: 'numeric', month: '2-digit', year: 'numeric' };
+const today = new Date().toLocaleDateString('en-GB', options); // Use 'en-GB' for DD/MM/YYYY format
 
-
-// app.put("/api/times/:date/:elapsedTimeType", async (req, res) => {
-//     try {
-//         const date = req.params.date;
-//         const elapsedTimeType = req.params.elapsedTimeType;
-//         const newElapsedTime = req.body.elapsedTime;
-
-//         if (typeof newElapsedTime === "undefined") {
-//             return res.status(400).json({ error: "Elapsed time is required" });
-//         }
-
-//         const ref = db.ref("times");
-//         const snapshot = await ref.once("value");
-//         const times = Object.values(snapshot.val());
-//         const timeEntryToUpdate = times.find((time) => new Date(time.date).toDateString() === new Date(date).toDateString());
-//         if (!timeEntryToUpdate) {
-//             return res.status(404).json({ message: "Time entry not found" });
-//         }
-
-//         const elapsedTimeToUpdate = timeEntryToUpdate.elapsedTimes.find((elapsedTime) => elapsedTime.id === elapsedTimeType);
-
-//         if (!elapsedTimeToUpdate) {
-//             return res.status(404).json({ message: "Elapsed time type not found" });
-//         }
-
-//         elapsedTimeToUpdate.elapsedTime = newElapsedTime;
-
-//         const updatedTimeEntry = { ...timeEntryToUpdate };
-//         console.log(timeEntryToUpdate);
-//         ref.once('value', (snapshot) => {
-//             snapshot.forEach((childSnapshot) => {
-//                 if (childSnapshot.val().date === timeEntryToUpdate.date) {
-//                     const key = childSnapshot.key;
-//                     ref.child(key).update(updatedTimeEntry);
-//                 }
-//             });
-//           });
-//         res.json({ message: "Time entry updated successfully" });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
-
-// module.exports = getTimes = ;
-
-// module.exports = createTimes = async (req, res, next) => {
-
-// };
 
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
@@ -77,9 +31,8 @@ module.exports = {
     
     createTimes : async (req, res, next) => {
         try {
-            const currentTime = new Date().toLocaleDateString(); // Set the date property to the current date
             const newTimeEntry = {
-            date: currentTime,
+            date: today,
             elapsedTimes: [
                 { id: "working", elapsedTime: 0 },
                 { id: "coding", elapsedTime: 0 },
@@ -91,7 +44,7 @@ module.exports = {
             console.log(newTimeEntry);
         
             const ref = db.ref("times");
-            const existingTimeEntryRef = ref.orderByChild("date").equalTo(currentTime).once("value");
+            const existingTimeEntryRef = ref.orderByChild("date").equalTo(today).once("value");
         
             existingTimeEntryRef.then((snapshot) => {
             if (snapshot.exists()) {
@@ -106,6 +59,47 @@ module.exports = {
             res.status(500).json({ error: error.message });
         }
     },
+    updateTimes: async (req, res) => {
+        try {
+            const date = req.params.date;
+            const elapsedTimeType = req.params.elapsedTimeType;
+            const newElapsedTime = req.body.elapsedTime;
+
+            if (typeof newElapsedTime === "undefined") {
+                return res.status(400).json({ error: "Elapsed time is required" });
+            }
+
+            const ref = db.ref("times");
+            const snapshot = await ref.once("value");
+            const times = Object.values(snapshot.val());
+            const timeEntryToUpdate = times.find((time) => new Date(time.date).toDateString() === new Date(date).toDateString());
+            if (!timeEntryToUpdate) {
+                return res.status(404).json({ message: "Time entry not found" });
+            }
+
+            const elapsedTimeToUpdate = timeEntryToUpdate.elapsedTimes.find((elapsedTime) => elapsedTime.id === elapsedTimeType);
+
+            if (!elapsedTimeToUpdate) {
+                return res.status(404).json({ message: "Elapsed time type not found" });
+            }
+
+            elapsedTimeToUpdate.elapsedTime = newElapsedTime;
+
+            const updatedTimeEntry = { ...timeEntryToUpdate };
+            console.log(timeEntryToUpdate);
+            ref.once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    if (childSnapshot.val().date === timeEntryToUpdate.date) {
+                        const key = childSnapshot.key;
+                        ref.child(key).update(updatedTimeEntry);
+                    }
+                });
+            });
+            res.json({ message: "Time entry updated successfully" });
+        } catch (error) {
+            res.status(500).json({ error: error.message });         
+        }
+    }
 } 
 
 

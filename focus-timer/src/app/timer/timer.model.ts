@@ -1,5 +1,5 @@
 export interface Time {
-date: Date,
+    date: string,
     elapsedTimes :[
         {
             id:string,

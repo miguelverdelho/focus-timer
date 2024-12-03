@@ -4,6 +4,9 @@ import { HttpClient } from "@angular/common/http";
 import { type Time } from "./timer.model";
 import { environment } from "../environments/environment";
 
+const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: '2-digit', year: 'numeric' };
+const today = new Date().toLocaleDateString('en-GB', options); // Use 'en-GB' for DD/MM/YYYY format
+
 
 @Injectable({
     providedIn: 'root'
@@ -15,13 +18,14 @@ export class TimerService {
     private destroyRef = inject(DestroyRef);
 
     todayTimers = signal<Time|undefined>(undefined);
+    
 
     constructor() {
         this.getTodayElapsedTime();
     }
 
     fetchTimerData() { 
-        return this.httpClient.get<Time[]>(this.apiUrl + 'times').pipe();
+        return this.httpClient.get<Time[]>(this.apiUrl + 'times');
     }
 
     onStartTimer(id: string) {
@@ -30,8 +34,11 @@ export class TimerService {
     }
 
     onStopTimer(id:string, currentTimer: number) {
-        if(this.timerStarted() === id)
+        console.log('[Stopped Timer_Service]: ' + id + ' ' + this.timerStarted());
+        if(this.timerStarted() === id){
+            this.setUpdatedElapsedTime(id, currentTimer);
             this.timerStarted.set('');
+        }
     }
 
     onTimerStarted(){
@@ -42,7 +49,9 @@ export class TimerService {
         const subscription = this.fetchTimerData()
         .subscribe({
           next: (data) => {
-            this.todayTimers.set(data.find(timer => new Date(timer.date).toLocaleDateString() === new Date().toLocaleDateString()));
+            let timers = Object.values(data).find(x => x.date === today);
+            console.log(timers);
+            this.todayTimers.set(timers);
           },
           complete: () => {
             
@@ -58,6 +67,25 @@ export class TimerService {
     }
 
     setUpdatedElapsedTime(id: string, elapsedTime: number) {
-        
+        console.log('[Updated Timer]: ' + id);
+        const subscription = this.pushTimerData(id, elapsedTime).subscribe({
+          next: (data) => {
+            console.log(data);
+          },
+          complete: () => {
+            
+          },
+          error: (error) => {
+            
+          }
+        });
+
+        this.destroyRef.onDestroy(() => {
+            subscription.unsubscribe();
+          });
+    }
+
+    pushTimerData(id: string, elapsedTime: number) {
+        return this.httpClient.put(this.apiUrl + 'times' + '/update/' + today.replace(/\//g, '-') + '/' + id, { elapsedTime });
     }
 }

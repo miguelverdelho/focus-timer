@@ -26,6 +26,7 @@ app.options('*', (req, res) => {
 const timesController = require('./controller/timesController.js');
 app.get('/api/times/', timesController.getTimes);
 app.post('/api/times/new', timesController.createTimes);
+app.put('/api/times/update/:date/:elapsedTimeType', timesController.updateTimes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

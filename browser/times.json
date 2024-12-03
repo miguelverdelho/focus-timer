@@ -1,0 +1,65 @@
+[
+    {
+      "date": "2024-11-29T00:00:00.000Z",
+      "elapsedTimes": [
+        {
+          "id": "working",
+          "elapsedTime": 20123100
+        },
+        {
+          "id": "coding",
+          "elapsedTime": 7201231
+        },
+        {
+          "id": "gaming",
+          "elapsedTime": 108000122
+        },
+        {
+          "id": "studying",
+          "elapsedTime": 10123111
+        }
+      ]
+    },
+    {
+      "date": "2024-11-30T00:00:00.000Z",
+      "elapsedTimes": [
+        {
+          "id": "working",
+          "elapsedTime": 20123100
+        },
+        {
+          "id": "coding",
+          "elapsedTime": 7201231
+        },
+        {
+          "id": "gaming",
+          "elapsedTime": 108000122
+        },
+        {
+          "id": "studying",
+          "elapsedTime": 10123111
+        }
+      ]
+    },
+    {
+      "date": "2024-12-01T00:00:00.000Z",
+      "elapsedTimes": [
+        {
+          "id": "working",
+          "elapsedTime": 20123100
+        },
+        {
+          "id": "coding",
+          "elapsedTime": 7201231
+        },
+        {
+          "id": "gaming",
+          "elapsedTime": 108000122
+        },
+        {
+          "id": "studying",
+          "elapsedTime": 10123111
+        }
+      ]
+    }
+  ]

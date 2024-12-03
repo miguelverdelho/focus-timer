@@ -1,4 +1,6 @@
-<article class="timer" [class.running]="isRunning">    
+
+<article class="timer" [class.running]="isRunning" [class.IsLoaded]="isLoaded">    
+    @if (isLoaded) {
     <div class="title">
         <h3>{{ title() }}</h3>
         <div class="controls">
@@ -13,4 +15,10 @@
     <div class="time">
         <p>{{ formatTime(elapsedTime) }}</p>
     </div>
+}@else{
+    <div class="loading-overlay" >
+        <img src="/loading.gif" alt="Loading...">
+    </div>
+
+}
 </article>

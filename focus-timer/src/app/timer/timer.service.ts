@@ -29,14 +29,11 @@ export class TimerService {
     }
 
     onStartTimer(id: string) {
-        console.log('[Started Timer]: ' + id);
         this.timerStarted.set(id);
     }
 
-    onStopTimer(id:string, currentTimer: number) {
-        console.log('[Stopped Timer_Service]: ' + id + ' ' + this.timerStarted());
+    onStopTimer(id:string) {
         if(this.timerStarted() === id){
-            this.setUpdatedElapsedTime(id, currentTimer);
             this.timerStarted.set('');
         }
     }
@@ -50,7 +47,6 @@ export class TimerService {
         .subscribe({
           next: (data) => {
             let timers = Object.values(data).find(x => x.date === today);
-            console.log(timers);
             this.todayTimers.set(timers);
           },
           complete: () => {
@@ -67,10 +63,8 @@ export class TimerService {
     }
 
     setUpdatedElapsedTime(id: string, elapsedTime: number) {
-        console.log('[Updated Timer]: ' + id);
         const subscription = this.pushTimerData(id, elapsedTime).subscribe({
           next: (data) => {
-            console.log(data);
           },
           complete: () => {
             

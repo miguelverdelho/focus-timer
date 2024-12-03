@@ -1,4 +1,4 @@
-import { Component, computed, CreateEffectOptions, effect, inject, input, OnInit } from '@angular/core';
+import { Component, computed, CreateEffectOptions, effect, inject, input, OnChanges, OnInit, signal, SimpleChange, SimpleChanges } from '@angular/core';
 import { ButtonComponent } from '../shared/button/button.component';
 import { TimerService } from './timer.service';
 
@@ -13,29 +13,34 @@ export class TimerComponent {
   title = input.required<string>();
   private id = computed(() => this.title().toLowerCase());
   private intervalId: any;
-  public elapsedTime: number = 0;
+  public elapsedTime: number  = -1;
   public isRunning: boolean = false;
+  // public isLoaded: boolean = false;
   private timerService = inject(TimerService);
 
-  constructor() {
-    
-    // load inital daily timer
-    effect(() => {
-      this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime || 0;
-    });   
+  constructor() { 
     // stop this timer if another one was started 
     effect(() =>{
-     const startedTimer = this.timerService.onTimerStarted();
-       if(startedTimer() !== this.title()){
-         this.stop();
-       }
-     }, {
-       allowSignalWrites: true
-     });
-  }
+      const startedTimer = this.timerService.onTimerStarted();
+        if(startedTimer() !== this.id() && this.isRunning){
+          this.stop();
+        }
+      }, {
+        allowSignalWrites: true
+      });
+      // load inital daily timer
+      effect(() => {
+        // console.log(this.timerService.todayTimers());
+        this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime || 0;
+      });       
+    }
+
+    get isLoaded(): boolean {
+      return this.elapsedTime > 0;
+    }
 
   public start() {
-    this.timerService.onStartTimer(this.title());    
+    this.timerService.onStartTimer(this.id());    
     if (!this.isRunning) {
       this.isRunning = true;
       this.intervalId = setInterval(() => {
@@ -43,14 +48,12 @@ export class TimerComponent {
       }, 10);
     }
   }
-
+  
   public stop() {
-    this.timerService.onStopTimer(this.id(), this.elapsedTime);
-    if (this.isRunning) {
-      clearInterval(this.intervalId);
-      console.log('[Stopped Timer]: ' + this.title());
+      this.timerService.onStopTimer(this.id());
+      this.timerService.setUpdatedElapsedTime(this.id(), this.elapsedTime);
+      clearInterval(this.intervalId);      
       this.isRunning = false;
-    }
   }
 
   public formatTime(milliseconds: number): string {

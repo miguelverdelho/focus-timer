@@ -16,7 +16,6 @@ const db = admin.database(); // Reference to the Realtime Database
 module.exports = {
     getTimes : async (req, res, next) => {
         try {
-            console.log("getTimes");
             const ref = db.ref("times"); // Path in your Firebase Realtime Database
             const snapshot = await ref.once("value"); // Fetch the data
             if (snapshot.exists()) {
@@ -32,16 +31,14 @@ module.exports = {
     createTimes : async (req, res, next) => {
         try {
             const newTimeEntry = {
-            date: today,
-            elapsedTimes: [
-                { id: "working", elapsedTime: 0 },
-                { id: "coding", elapsedTime: 0 },
-                { id: "gaming", elapsedTime: 0 },
-                { id: "studying", elapsedTime: 0 },
-            ],
+                date: today,
+                elapsedTimes: [
+                    { id: "working", elapsedTime: 0 },
+                    { id: "coding", elapsedTime: 0 },
+                    { id: "gaming", elapsedTime: 0 },
+                    { id: "studying", elapsedTime: 0 },
+                ],
             };
-        
-            console.log(newTimeEntry);
         
             const ref = db.ref("times");
             const existingTimeEntryRef = ref.orderByChild("date").equalTo(today).once("value");
@@ -86,7 +83,6 @@ module.exports = {
             elapsedTimeToUpdate.elapsedTime = newElapsedTime;
 
             const updatedTimeEntry = { ...timeEntryToUpdate };
-            console.log(timeEntryToUpdate);
             ref.once('value', (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     if (childSnapshot.val().date === timeEntryToUpdate.date) {

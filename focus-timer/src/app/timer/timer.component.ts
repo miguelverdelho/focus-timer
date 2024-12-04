@@ -31,12 +31,13 @@ export class TimerComponent {
       // load inital daily timer
       effect(() => {
         // console.log(this.timerService.todayTimers());
-        this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime || 0;
+        if( this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime !== undefined)
+          this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())!.elapsedTime!;
       });       
     }
 
     get isLoaded(): boolean {
-      return this.elapsedTime > 0;
+      return this.elapsedTime >= 0;
     }
 
   public start() {

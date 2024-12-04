@@ -47,7 +47,12 @@ export class TimerService {
         .subscribe({
           next: (data) => {
             let timers = Object.values(data).find(x => x.date === today);
-            this.todayTimers.set(timers);
+            if(!timers){
+                this.postTimerData();
+            }
+            else {
+                this.todayTimers.set(timers);
+            }
           },
           complete: () => {
             
@@ -63,7 +68,7 @@ export class TimerService {
     }
 
     setUpdatedElapsedTime(id: string, elapsedTime: number) {
-        const subscription = this.pushTimerData(id, elapsedTime).subscribe({
+        const subscription = this.updateTimerData(id, elapsedTime).subscribe({
           next: (data) => {
           },
           complete: () => {
@@ -79,7 +84,18 @@ export class TimerService {
           });
     }
 
-    pushTimerData(id: string, elapsedTime: number) {
+    updateTimerData(id: string, elapsedTime: number) {
         return this.httpClient.put(this.apiUrl + 'times' + '/update/' + today.replace(/\//g, '-') + '/' + id, { elapsedTime });
+    }
+
+    postTimerData() {
+        return this.httpClient.post(this.apiUrl + 'times/new', {}).subscribe(
+            (data) => {
+                this.getTodayElapsedTime();
+            },
+            (error) => {
+                console.error(error);
+            }
+        );
     }
 }

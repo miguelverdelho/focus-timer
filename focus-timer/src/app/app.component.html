@@ -1,8 +1,19 @@
 <app-header/>
 
+
+@if(authService.user()){
+<div>
+    <p>Welcome, {{ authService.user()?.name }}</p>
+    <img [src]="authService.user()?.image" alt="Profile Image">
+</div>
 <main>
  <app-timer [title]="'Working'"/>
  <app-timer [title]="'Studying'"/>
  <app-timer [title]="'Coding'"/>
  <app-timer [title]="'Gaming'"/>
 </main>
+<button (click)="logout()">logout</button>
+}@else {
+    <button (click)="login()">Login with Google</button>
+}
+

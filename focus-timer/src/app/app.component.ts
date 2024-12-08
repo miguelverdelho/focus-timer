@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { TimerComponent } from "./timer/timer.component";
 import { HeaderComponent } from "./header/header.component";
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,18 @@ import { HeaderComponent } from "./header/header.component";
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  
+  constructor(public authService: AuthService) {  }
+
+  login() {    
+    
+      // Store token and user details in AuthService
+      this.authService.signInWithGoogle();    
+  }
+
+  logout() {
+
+    this.authService.signOut();
+  }
+
 }

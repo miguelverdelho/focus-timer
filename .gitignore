@@ -1,5 +1,8 @@
+focus-timer/src/app/environments/*
+
 focus-timer-api/serviceAccountKey.json
 focus-timer-api/.env
+focus-timer-api/environments
 focus-timer-api/firebase/serviceAccountKey.json
 .vs/
 /focus-timer-dotnet-api/bin/Debug/net8.0

@@ -4,3 +4,5 @@ focus-timer-api/firebase/serviceAccountKey.json
 .vs/
 /focus-timer-dotnet-api/bin/Debug/net8.0
 /focus-timer-dotnet-api/obj
+/focus-timer-dotnet-api/appsettings.json
+/focus-timer-dotnet-api/FirebaseKey/serviceAccountKey.json

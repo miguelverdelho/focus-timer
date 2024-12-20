@@ -1,10 +1,12 @@
 ﻿
-using focus_timer_dotnet_api.Models;
+using focus_timer_dotnet_api.Data.Implementations;
+using focus_timer_dotnet_api.Data.Models;
+using focus_timer_dotnet_api.Service.Interfaces;
 using MongoDB.Driver;
 
 namespace focus_timer_dotnet_api.Service
 {
-    public class TimeService
+    public class TimeService : ITimeService
     {
         private readonly MongoDbService _mongoDbService; 
 
@@ -20,7 +22,7 @@ namespace focus_timer_dotnet_api.Service
             return collection;
         }
 
-        internal async Task<Time?> AddTime(Time time)
+        public async Task<Time?> AddTime(Time time)
         {
             var collection = _mongoDbService.GetCollection<Time>("times");
 

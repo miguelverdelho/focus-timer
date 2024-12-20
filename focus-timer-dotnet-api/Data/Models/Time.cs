@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace focus_timer_dotnet_api.Models
+namespace focus_timer_dotnet_api.Data.Models
 {
     public class Time
     {

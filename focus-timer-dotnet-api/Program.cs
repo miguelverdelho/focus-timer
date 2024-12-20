@@ -1,7 +1,12 @@
-using focus_timer_dotnet_api.Service;
-using focus_timer_dotnet_api.Settings;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using focus_timer_dotnet_api.Data.Implementations;
+using focus_timer_dotnet_api.Middleware;
+using focus_timer_dotnet_api.Service.Interfaces;
+using focus_timer_dotnet_api.Service;
+using focus_timer_dotnet_api.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +25,34 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader());
 });
 
+// Configure JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var settings = builder.Configuration.GetSection("GoogleAuthSettings").Get<GoogleAuthSettings>();
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidIssuer = "accounts.google.com", // Replace if necessary
+            ValidAudience = settings!.GoogleClientId,   // Your Google Client ID
+            IssuerSigningKeyResolver = (token, securityToken, kid, validationParameters) =>
+            {
+                // Fetch Google's public keys dynamically
+                var client = new HttpClient();
+                var response = client.GetStringAsync("https://www.googleapis.com/oauth2/v3/certs").Result;
+                var keys = new JsonWebKeySet(response);
+                return keys.Keys;
+            },
+            NameClaimType = "name",
+            RoleClaimType = "role",            
+            SaveSigninToken = true,
+           
+        };
+    });
+
+
 //Mongo DB Services
 // Bind MongoDB settings from configuration
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
@@ -28,16 +61,29 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IConfiguration>().GetSection("MongoDbSettings").Get<MongoDbSettings>();
-    return new MongoClient(settings.ConnectionString);
+    return new MongoClient(settings!.ConnectionString);
 });
 
 // Register MongoDbService
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<TimeService>();
 
+// Register interfaces
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IBaseSingleton>()
+    .AddClasses(classes => classes.AssignableTo<IBaseSingleton>())
+    .AsImplementedInterfaces()
+    .WithSingletonLifetime());
+
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IBaseScoped>()
+    .AddClasses(classes => classes.AssignableTo<IBaseScoped>())
+    .AsImplementedInterfaces()
+    .WithScopedLifetime());
 
 var app = builder.Build();
 
+app.UseMiddleware<HttpClaimsMiddleware>();
 // Test MongoDB connection (optional)
 using (var scope = app.Services.CreateScope())
 {

@@ -18,14 +18,13 @@ export class TimerService {
     private destroyRef = inject(DestroyRef);
 
     todayTimers = signal<Time|undefined>(undefined);
-    
 
     constructor() {
         this.getTodayElapsedTime();
     }
 
     fetchTimerData() { 
-        return this.httpClient.get<Time[]>(this.apiUrl + 'times');
+        return this.httpClient.get<Time>(this.apiUrl + 'user/times');
     }
 
     onStartTimer(id: string) {
@@ -46,14 +45,10 @@ export class TimerService {
         const subscription = this.fetchTimerData()
         .subscribe({
           next: (data) => {
-            let timers = Object.values(data).find(x => x.date === today);
-            if(!timers){
-                this.postTimerData();
-            }
-            else {
-                this.todayTimers.set(timers);
-            }
-          },
+            console.log(data);
+            console.log({ date: data.date, elapsedTimes: data.elapsedTimes });
+            this.todayTimers.set({ date: data.date, elapsedTimes: data.elapsedTimes });
+        },
           complete: () => {
             
           },

@@ -42,10 +42,19 @@ namespace focus_timer_dotnet_api.Controllers
         }
 
         [HttpGet]
-        [Route("/times")]
+        [Route("times")]
         public async Task<IActionResult> GetUserTimes()
         {
             var user = (User?)HttpContext.Items["User"];
+
+            if (user != null && user.Id == null)
+            {
+                return BadRequest("Required claims are missing.");
+            }
+
+            var time = await _userService.GetUserDailyTimes(user!);
+
+            return Ok(time);
         }
     }
 }

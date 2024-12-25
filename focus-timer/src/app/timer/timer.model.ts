@@ -2,8 +2,8 @@ export interface Time {
     date: string,
     elapsedTimes :[
         {
-            id:string,
-            elapsedTime: number,
+            activityName:string,
+            timeSpent: number,
         }
     ]
 }

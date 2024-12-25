@@ -11,7 +11,7 @@ import { TimerService } from './timer.service';
 })
 export class TimerComponent {
   title = input.required<string>();
-  private id = computed(() => this.title().toLowerCase());
+  private id = computed(() => this.title());
   private intervalId: any;
   public elapsedTime: number  = -1;
   public isRunning: boolean = false;
@@ -29,16 +29,16 @@ export class TimerComponent {
         allowSignalWrites: true
       });
       // load inital daily timer
-      effect(() => {
-        // console.log(this.timerService.todayTimers());
-        if( this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())?.elapsedTime !== undefined)
-          this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.id === this.id())!.elapsedTime!;
-      });       
-    }
+    effect(() => {
+      //console.log(this.timerService.todayTimers());
+      if( this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.activityName === this.id())?.timeSpent !== undefined)
+        this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.activityName === this.id())?.timeSpent!;
+    });       
+  }
 
-    get isLoaded(): boolean {
-      return this.elapsedTime >= 0;
-    }
+  get isLoaded(): boolean {
+    return this.elapsedTime >= 0;
+  }
 
   public start() {
     this.timerService.onStartTimer(this.id());    

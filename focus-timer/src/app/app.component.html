@@ -7,10 +7,7 @@
     <img [src]="authService.user()?.image" alt="Profile Image">
 </div>
 <main>
- <app-timer [title]="'Working'"/>
- <app-timer [title]="'Studying'"/>
- <app-timer [title]="'Coding'"/>
- <app-timer [title]="'Gaming'"/>
+    <app-timers/>
 </main>
 <button (click)="logout()">logout</button>
 }@else {

@@ -16,6 +16,15 @@ namespace focus_timer_dotnet_api.Data.Models
     {
         [Required]
         public string ActivityName { get; set; } = null!;
-        public TimeSpan TimeSpent { get; set; }
+        public long TimeSpent { get; set; }
+    }
+
+    public static class TimerConstants
+    {
+        public static readonly List<ElapsedTime> DefaultTimerTypes =
+        [
+            new ElapsedTime { ActivityName = "Work", TimeSpent = 0 },
+            new ElapsedTime { ActivityName = "Gaming", TimeSpent = 0 },
+        ];
     }
 }

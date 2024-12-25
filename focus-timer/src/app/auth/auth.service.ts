@@ -1,12 +1,16 @@
-import { Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { gapi, loadGapiInsideDOM } from 'gapi-script';
 import { environment } from '../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private auth2: any;
+  private apiUrl = environment.apiUrl;
+  private httpClient = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
 
   // Signal to hold user data
   private _user = signal<{
@@ -57,6 +61,10 @@ export class AuthService {
         name: profile.getName(),
         image: profile.getImageUrl(),
         token,
+      });
+
+      this.httpClient.get(this.apiUrl + 'user/login', {}).subscribe((data) => {
+        console.log(data);
       });
 
       return token;

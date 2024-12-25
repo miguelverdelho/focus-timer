@@ -1,0 +1,3 @@
+@for(timer of this.timerService.todayTimers()?.elapsedTimes; track timer){
+    <app-timer [title]="timer.activityName"/>
+}

@@ -22,6 +22,8 @@ namespace focus_timer_dotnet_api.Data.Models
         [
             new Time { ActivityName = "Work", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
             new Time { ActivityName = "Gaming", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
+            new Time { ActivityName = "Studying", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
+            new Time { ActivityName = "Coding", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
         ];
     }
 }

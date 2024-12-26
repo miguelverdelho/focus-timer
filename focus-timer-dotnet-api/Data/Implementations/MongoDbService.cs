@@ -31,13 +31,8 @@ namespace focus_timer_dotnet_api.Data.Implementations
             return user;
         }
 
-        public async Task<User> CreateUserWithTimeAsync(User user)
-        {
-            var timeEntry = CreateTimeEntry(user);
-
-            // Add the Time entry to the user
-            user.Times.Add(timeEntry);
-
+        public async Task<User> CreateUserAsync(User user)
+        {           
             // Get the collection for users
             var collection = GetCollection<User>("users");
 
@@ -47,56 +42,108 @@ namespace focus_timer_dotnet_api.Data.Implementations
             return user;
         }
 
-        public async Task<Time?> GetUserDailyTimes(User user)
+        public async Task<List<Time>> GetUserDailyTimes(User user)
         {
             // Get today's date
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
             // Get the collection for users
-            var collection = GetCollection<User>("users");
+            var collection = GetCollection<Time>("times");
 
             // Get user with same Id
-            var foundUser = await collection.Find(t => t.Id == user.Id).FirstOrDefaultAsync();
+            var userTimes = await collection.Find(t => t.UserId == user.Id && t.Date == today).ToListAsync();
 
-            if(foundUser == null)
+            if (userTimes.Count > 0) {
+                return userTimes;
+            }
+
+            var timeEntries = await CreateTimeEntriesAsync(user.Id!);
+
+            // Add the Time entry to the user
+            collection.InsertMany(timeEntries);
+
+            return timeEntries;
+        }
+
+        public async Task<List<Time>> CreateTimeEntriesAsync(string userId)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Get the collection for Time
+            var timeCollection = GetCollection<Time>("times");
+
+            // Find the user's latest Time entries
+            var latestTimes = await timeCollection
+                .Find(t => t.UserId == userId)  // Filter by the userId
+                .SortByDescending(t => t.Date) // Sort by Date in descending order (most recent first)
+                //.Limit(1)                      // Only get the most recent Time entry
+                .ToListAsync();
+
+            // Get the latest date from the most recent time entry
+            var latestDate = latestTimes?.FirstOrDefault()?.Date;
+
+            List<Time> timeEntries;
+
+            if (latestDate.HasValue && latestDate.Value < today)
+            {
+                // If the latest entry is from a previous day, replicate its activities for today
+                var timesToReplicate = latestTimes.Where(time => time.Date == latestDate.Value).ToList();
+
+                // Create new time entries for today with the same activity names but reset TimeSpent to 0
+                timeEntries = timesToReplicate.Select(time => new Time
+                {
+                    UserId = userId,          // Reference to the user
+                    ActivityName = time.ActivityName,  // Copy activity name
+                    Date = today,             // Set today's date
+                    TimeSpent = 0             // Reset TimeSpent
+                }).ToList();
+            }
+            else
+            {
+                // If there is no previous day to replicate, use default timer list (you can define this)
+                timeEntries = TimerConstants.DefaultTimerTypes.Select(defaultTimer => new Time
+                {
+                    UserId = userId,
+                    ActivityName = defaultTimer.ActivityName,  // Assuming DefaultTimerTypes has ActivityNames
+                    Date = today,
+                    TimeSpent = 0
+                }).ToList();
+            }
+
+            // Return the list of new Time entries
+            return timeEntries;
+        }
+
+        public async Task<Time> UpdateUserTime(string userId, Time time)
+        {
+            // Get the collection for Time
+            var timeCollection = GetCollection<Time>("times");
+
+            // Find the existing Time entry for the user with the same ActivityName and Date
+            var existingTime = await timeCollection
+                .Find(t => t.UserId == userId && t.ActivityName == time.ActivityName && t.Date == time.Date)
+                .FirstOrDefaultAsync();
+
+            // If the time entry does not exist, return null (or handle as needed)
+            if (existingTime == null)
             {
                 return null;
             }
 
-            var timeEntry = CreateTimeEntry(foundUser);
+            // Update the TimeSpent value in the existing Time entry
+            var updateDefinition = Builders<Time>.Update.Set(t => t.TimeSpent, time.TimeSpent);
 
-            // Add the Time entry to the user
-            foundUser.Times.Add(timeEntry);
+            // Perform the update operation
+            await timeCollection.UpdateOneAsync(
+                t => t.UserId == userId && t.ActivityName == time.ActivityName && t.Date == time.Date,
+                updateDefinition
+            );
 
-            return timeEntry;
+            // Return the updated Time entry (this will reflect the new TimeSpent value)
+            existingTime.TimeSpent = time.TimeSpent;
+            return existingTime;
         }
 
-        public Time CreateTimeEntry(User user)
-        {
-            // Get today's date
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            
-             // Find the Time entry for today
-            var timeEntry = user.Times.FirstOrDefault(t => t.Date == today);
 
-            if(timeEntry == null)
-            {
-                // Is there a time for the day before today?
-                var previousDay = today.AddDays(-1);
-                var timeEntryDayBefore = user.Times.FirstOrDefault(t => t.Date == previousDay);
-
-                // Create a new Time entry for today
-                timeEntry = new Time
-                {
-                    Date = today,
-                    ElapsedTimes = timeEntryDayBefore?.ElapsedTimes ?? TimerConstants.DefaultTimerTypes, // Initialize empty if no elapsed times
-                    Id = ObjectId.GenerateNewId().ToString(), // Generate a new ObjectId
-                };
-            }
-
-            //TODO put time entry in DB
-
-            return timeEntry;
-        }
     }
 }

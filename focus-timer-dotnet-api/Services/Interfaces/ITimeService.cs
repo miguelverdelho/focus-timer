@@ -6,5 +6,6 @@ namespace focus_timer_dotnet_api.Service.Interfaces
     {
         Task<List<Time>> GetTimes();
         Task<Time?> AddTime(Time time);
+        Task<Time?> UpdateTime(User user, Time elapsedTime);
     }
 }

@@ -30,5 +30,12 @@ namespace focus_timer_dotnet_api.Service
 
             return time;
         }
+
+        public async Task<Time?> UpdateTime(User user, Time elapsedTime)
+        {
+            if (user.Id == null) return null;
+
+            return await _mongoDbService.UpdateUserTime(user.Id, elapsedTime);
+        }
     }
 }

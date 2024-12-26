@@ -35,10 +35,17 @@ namespace focus_timer_dotnet_api.Controllers
             return Ok(await _timeService.GetTimes());
         }
 
-        [HttpPost("new")]
+        [HttpPut("update")]
         public async Task<IActionResult> AddTime([FromBody] Time time){
             _logger.LogInformation("Adding time");
-            return Ok(await _timeService.AddTime(time));
+            var user = (User?)HttpContext.Items["User"];
+
+            if (user != null && user.Id == null)
+            {
+                return BadRequest("Required claims are missing.");
+            }
+
+            return Ok(await _timeService.UpdateTime(user!, time));
         }
     }
 }

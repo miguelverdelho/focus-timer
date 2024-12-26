@@ -12,5 +12,7 @@ import { TimerComponent } from '../timer/timer.component';
 export class TimersComponent {
   public timerService = inject(TimerService);
 
-
+  constructor () { 
+    this.timerService.getTodayElapsedTime();
+  }
 }

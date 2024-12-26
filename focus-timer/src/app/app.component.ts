@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { TimerComponent } from "./timer/timer.component";
 import { HeaderComponent } from "./header/header.component";
 import { AuthService } from './auth/auth.service';
 import { TimersComponent } from './timers/timers.component';
@@ -17,13 +16,6 @@ export class AppComponent {
   constructor() { 
   }
   
-  login() { 
-    // Store token and user details in AuthService
-    this.authService.signInWithGoogle();
-  }
 
-  logout() {
-    this.authService.signOut();
-  }
 
 }

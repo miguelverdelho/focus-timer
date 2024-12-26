@@ -2,5 +2,19 @@
     <img ngSrc="timer.png" alt="Timer icon" width="64" height="64" />
     
     <h1>Focus Timer</h1>        
+
+    <div class="user-info">
+        @if(authService.user()){
+            
+            <img [src]="authService.user()?.image" alt="Profile Image">
+            <h3>{{ authService.user()?.name }}</h3>
+            
+            
+            <button (click)="logout()" appButton>Logout</button>
+        }@else {
+            <button (click)="login()" appButton>Login</button>
+        }
+        
+    </div>
     
 </header>

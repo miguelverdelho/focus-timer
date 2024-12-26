@@ -1,9 +1,7 @@
 export interface Time {
     date: string,
-    elapsedTimes :[
-        {
-            activityName:string,
-            timeSpent: number,
-        }
-    ]
+    activityName:string,
+    timeSpent: number,
+    userId: string,
+    id: string
 }

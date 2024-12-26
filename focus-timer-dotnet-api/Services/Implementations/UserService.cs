@@ -23,16 +23,18 @@ namespace focus_timer_dotnet_api.Service
             var existingUser = _mongoDbService.DoesUserExistAsync(user.Id).Result;
 
             if (existingUser == null) {
-                existingUser = await _mongoDbService.CreateUserWithTimeAsync(user);
+                existingUser = await _mongoDbService.CreateUserAsync(user);
             }            
 
             return existingUser ?? null;
         }
 
-        public async Task<Time?> GetUserDailyTimes(User user){
+        public async Task<List<Time>> GetUserDailyTimes(User user){
              if (user.Id == null || user.Email == null || user.Name == null) return null;
 
              return await _mongoDbService.GetUserDailyTimes(user);
         }
+
+        
     }
 }

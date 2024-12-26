@@ -11,7 +11,7 @@ import { TimerService } from './timer.service';
 })
 export class TimerComponent {
   title = input.required<string>();
-  private id = computed(() => this.title());
+  private activityName = computed(() => this.title());
   private intervalId: any;
   public elapsedTime: number  = -1;
   public isRunning: boolean = false;
@@ -22,7 +22,7 @@ export class TimerComponent {
     // stop this timer if another one was started 
     effect(() =>{
       const startedTimer = this.timerService.onTimerStarted();
-        if(startedTimer() !== this.id() && this.isRunning){
+        if(startedTimer() !== this.activityName() && this.isRunning){
           this.stop();
         }
       }, {
@@ -31,8 +31,8 @@ export class TimerComponent {
       // load inital daily timer
     effect(() => {
       //console.log(this.timerService.todayTimers());
-      if( this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.activityName === this.id())?.timeSpent !== undefined)
-        this.elapsedTime = this.timerService.todayTimers()?.elapsedTimes.find(timer => timer.activityName === this.id())?.timeSpent!;
+      if( this.timerService.todayTimers()?.find(timer => timer.activityName === this.activityName())?.timeSpent !== undefined)
+        this.elapsedTime = this.timerService.todayTimers()?.find(timer => timer.activityName === this.activityName())?.timeSpent!;
     });       
   }
 
@@ -41,7 +41,7 @@ export class TimerComponent {
   }
 
   public start() {
-    this.timerService.onStartTimer(this.id());    
+    this.timerService.onStartTimer(this.activityName());    
     if (!this.isRunning) {
       this.isRunning = true;
       this.intervalId = setInterval(() => {
@@ -51,8 +51,8 @@ export class TimerComponent {
   }
   
   public stop() {
-      this.timerService.onStopTimer(this.id());
-      this.timerService.setUpdatedElapsedTime(this.id(), this.elapsedTime);
+      this.timerService.onStopTimer(this.activityName());
+      this.timerService.setUpdatedElapsedTime(this.activityName(), this.elapsedTime);
       clearInterval(this.intervalId);      
       this.isRunning = false;
   }

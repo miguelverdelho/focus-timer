@@ -6,6 +6,7 @@ namespace focus_timer_dotnet_api.Data.Interfaces
     public interface IMongoDbService
     {
         IMongoCollection<T> GetCollection<T>(string collectionName);
-        Task<Time?> GetUserDailyTimes(User user);
+        Task<List<Time>> GetUserDailyTimes(User user);
+        Task<Time> UpdateUserTime(string userId, Time time);
     }
 }

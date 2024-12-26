@@ -55,6 +55,6 @@ namespace focus_timer_dotnet_api.Controllers
             var time = await _userService.GetUserDailyTimes(user!);
 
             return Ok(time);
-        }
+        }        
     }
 }

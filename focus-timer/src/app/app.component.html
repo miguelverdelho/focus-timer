@@ -2,15 +2,8 @@
 
 
 @if(authService.user()){
-<div>
-    <p>Welcome, {{ authService.user()?.name }}</p>
-    <img [src]="authService.user()?.image" alt="Profile Image">
-</div>
 <main>
     <app-timers/>
 </main>
-<button (click)="logout()">logout</button>
-}@else {
-    <button (click)="login()">Login with Google</button>
 }
 

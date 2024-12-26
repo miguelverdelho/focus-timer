@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace focus_timer_dotnet_api.Data.Models
@@ -8,23 +9,19 @@ namespace focus_timer_dotnet_api.Data.Models
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; } = null!;
-        public DateOnly Date { get; set; }
-        public List<ElapsedTime> ElapsedTimes { get; set; } = new();
-    }
-
-    public class ElapsedTime
-    {
-        [Required]
+        [JsonIgnore]
+        public string UserId { get; set; } = null!;
         public string ActivityName { get; set; } = null!;
+        public DateOnly Date { get; set; }
         public long TimeSpent { get; set; }
     }
 
     public static class TimerConstants
     {
-        public static readonly List<ElapsedTime> DefaultTimerTypes =
+        public static readonly List<Time> DefaultTimerTypes =
         [
-            new ElapsedTime { ActivityName = "Work", TimeSpent = 0 },
-            new ElapsedTime { ActivityName = "Gaming", TimeSpent = 0 },
+            new Time { ActivityName = "Work", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
+            new Time { ActivityName = "Gaming", TimeSpent = 0, Date = DateOnly.FromDateTime(DateTime.Today) },
         ];
     }
 }

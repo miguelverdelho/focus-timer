@@ -7,10 +7,13 @@ using focus_timer_dotnet_api.Middleware;
 using focus_timer_dotnet_api.Service.Interfaces;
 using focus_timer_dotnet_api.Service;
 using focus_timer_dotnet_api.Settings;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -23,6 +26,13 @@ builder.Services.AddCors(options =>
         builder => builder.AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
+});
+
+builder.Services.Configure<MvcNewtonsoftJsonOptions>(o =>
+{
+    o.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;  // Ensure missing members cause errors
+    //o.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;  // Ignore properties with null values during serialization
+    //o.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;  // Ignore properties with default values
 });
 
 // Configure JWT Authentication
